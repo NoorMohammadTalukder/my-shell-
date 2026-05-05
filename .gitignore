@@ -1,0 +1,5 @@
+*.o
+bin/shell
+.vscode/
+*.swp
+.DS_Store
