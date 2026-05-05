@@ -7,3 +7,7 @@
 - Created src, include, bin, obj folders
 - Added empty source files: main.c, shell.c, exec.c
 - Added empty header files: lexer.h, exec.h, shell.h
+
+## .gitignore
+- Added .gitignore to exclude compiled files and editor files
+
