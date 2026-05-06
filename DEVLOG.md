@@ -76,3 +76,12 @@
 - ran ./bin/shell
 - output: size: 0
 - working correctly
+
+## lexer.c - add_token()
+- adds one word into tokenlist
+- grows the items array by using realloc
+
+### Test:
+- added ls and -la to tokenlist
+- output: size: 0, token[0]: ls, token[1]: -la
+- working correctly
