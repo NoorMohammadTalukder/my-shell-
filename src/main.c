@@ -2,6 +2,7 @@
 #include "lexer.h"
 
 int main(void) {
-    printf("shell project \n");
+    tokenlist *tl = new_tokenlist();
+    printf("size: %d\n", tl->size);
     return 0;
 }
