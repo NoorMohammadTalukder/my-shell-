@@ -103,3 +103,20 @@
 - input: test test
 - output: your input is: test test
 - working correctly
+
+## lexer.c - get_tokens()
+- splits input string into tokens using strtok
+
+### Bug:
+- missing ) in for loop in main.c
+- logical error: get_tokens result not used
+- was printing old tokenlist instead of new one from input
+
+### Fix:
+- added missing ) after i++
+- replaced old tokenlist with get_tokens(input)
+
+### Test:
+- input: cd src
+- output: token[0]: cd, token[1]: src
+- working correctly
