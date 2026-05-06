@@ -51,3 +51,19 @@ char *get_input(void) {
     buffer[bufsize] = '\0';
     return buffer;
 }
+// split the input into tokens
+tokenlist *get_tokens(char *input) {
+    char *buf = (char *)malloc(strlen(input) + 1);
+    strcpy(buf, input);
+
+    tokenlist *tokens = new_tokenlist();
+    char *word = strtok(buf, " ");
+
+    while (word != NULL) {
+        add_token(tokens, word);
+        word = strtok(NULL, " ");
+    }
+
+    free(buf);
+    return tokens;
+}
