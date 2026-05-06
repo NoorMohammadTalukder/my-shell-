@@ -8,5 +8,9 @@ int main(void) {
     add_token(tl, "-la");
     printf("token[0]: %s\n", tl->items[0]);
     printf("token[1]: %s\n", tl->items[1]);
+    printf("enter your input: ");
+    char *input = get_input();
+    printf("your input is: %s\n", input);
+    free(input);
     return 0;
 }

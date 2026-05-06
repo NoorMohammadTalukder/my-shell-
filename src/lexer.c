@@ -20,3 +20,34 @@ void add_token(tokenlist *tokens, char *item) {
     strcpy(tokens->items[i], item);
     tokens->size += 1;
 }
+// read input line from user
+char *get_input(void) {
+    char *buffer = NULL;
+    int bufsize = 0;
+    char line[8];
+
+    while (fgets(line, 8, stdin) != NULL) {
+        int addby = 0;
+        char *newln = strchr(line,'\n');
+
+        if (newln != NULL){
+            addby = newln - line;
+	}
+        else{
+            addby = 8 - 1;
+	}
+
+        buffer = (char *)realloc(buffer, bufsize + addby + 1);
+        memcpy(&buffer[bufsize], line, addby);
+        bufsize += addby;
+
+        if (newln != NULL)
+            break;
+    }
+
+    if (buffer == NULL && feof(stdin))
+        return NULL;
+
+    buffer[bufsize] = '\0';
+    return buffer;
+}
