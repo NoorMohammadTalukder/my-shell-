@@ -85,3 +85,21 @@
 - added ls and -la to tokenlist
 - output: size: 0, token[0]: ls, token[1]: -la
 - working correctly
+
+## lexer.c - get_input()
+- reads input using fgets
+- handles any length input using realloc
+- stops reading when newline found
+
+### Bug:
+- NUL typo instead of NULL
+- strchr missing second argument '\n'
+
+### Fix:
+- changed NUL to NULL
+- added '\n' as second argument to strchr
+
+### Test:
+- input: test test
+- output: your input is: test test
+- working correctly
