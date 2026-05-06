@@ -57,3 +57,22 @@
 
 - compiled successfully
 - lexer.h loaded successfully in main.c
+
+## lexer.c - new_tokenlist()
+
+- creates empty tokenlist
+- allocates memory for items array
+
+### Bug:
+
+- type caste error for using %d with size_t type
+
+### Fix:
+
+- cast size_t to int
+
+### Test:
+
+- ran ./bin/shell
+- output: size: 0
+- working correctly
