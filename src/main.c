@@ -3,6 +3,6 @@
 
 int main(void) {
     tokenlist *tl = new_tokenlist();
-    printf("size: %d\n", tl->size);
+    printf("size: %d\n",(int) tl->size);
     return 0;
 }
