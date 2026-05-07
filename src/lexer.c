@@ -74,3 +74,32 @@ void free_tokens(tokenlist *tokens) {
     free(tokens->items);
     free(tokens);
 }
+// madeup strdup, using in expand_env_vars
+static char *str_copy(const char *s) {
+    size_t len = strlen(s) + 1;
+    char *copy = malloc(len);
+    if (copy == NULL) {
+        perror("malloc");
+        exit(1);
+    }
+    memcpy(copy, s, len);
+    return copy;
+}
+
+// replace $VAR tokens with actual env values
+void expand_env_vars(tokenlist *tokens) {
+    char *tok = NULL;
+    char *val = NULL;
+
+    for (int i = 0; i < (int)tokens->size; i++) {
+        tok = tokens->items[i};
+
+        if (tok[0] != '$'){
+            continue;
+        }
+
+        val = getenv(tok);
+        free(tokens->items[i]);
+        tokens->items[i] = str_copy(val ? val : "");
+    }
+}
