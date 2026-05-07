@@ -67,3 +67,10 @@ tokenlist *get_tokens(char *input) {
     free(buf);
     return tokens;
 }
+// free memory in tokenlist
+void free_tokens(tokenlist *tokens) {
+    for (int i = 0; i < (int)tokens->size; i++)
+        free(tokens->items[i]);
+    free(tokens->items);
+    free(tokens);
+}

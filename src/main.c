@@ -9,6 +9,7 @@ int main(void) {
     for (int i = 0; i < (int)tl->size; i++){
         printf("token[%d]: %s\n", i, tl->items[i]);
     }
+    free_tokens(tl);
     free(input);
     return 0;
 }
