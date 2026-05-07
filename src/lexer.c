@@ -92,13 +92,13 @@ void expand_env_vars(tokenlist *tokens) {
     char *val = NULL;
 
     for (int i = 0; i < (int)tokens->size; i++) {
-        tok = tokens->items[i};
+        tok = tokens->items[i];
 
         if (tok[0] != '$'){
             continue;
         }
 
-        val = getenv(tok);
+        val = getenv(tok+1);
         free(tokens->items[i]);
         tokens->items[i] = str_copy(val ? val : "");
     }
