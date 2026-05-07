@@ -143,3 +143,31 @@
 - output: token[0]: cd, token[1]: src
 - memory freed after use
 - working correctly
+
+## lexer.c - expand_env_vars()
+
+- replaces $VAR tokens with actual env values
+
+### Bug 1:
+
+- used } instead of ] in tokens->items[i}
+- compiler showed expected ] before } token
+
+### Fix 1:
+
+- changed } to ] in tokens->items[i]
+
+### Bug 2:
+
+- wrote getenv(tok) instead of getenv(tok + 1)
+- tested echo $HOME and token showed empty
+
+### Fix 2:
+
+- realized getenv needs the name without $ sign
+- tok + 1 moves pointer one step forward skipping $
+
+### Test:
+
+- input: echo $HOME
+- output: token[0]: echo, token[1]: /root
