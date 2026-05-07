@@ -78,45 +78,68 @@
 - working correctly
 
 ## lexer.c - add_token()
+
 - adds one word into tokenlist
 - grows the items array by using realloc
 
 ### Test:
+
 - added ls and -la to tokenlist
 - output: size: 0, token[0]: ls, token[1]: -la
 - working correctly
 
 ## lexer.c - get_input()
+
 - reads input using fgets
 - handles any length input using realloc
 - stops reading when newline found
 
 ### Bug:
+
 - NUL typo instead of NULL
 - strchr missing second argument '\n'
 
 ### Fix:
+
 - changed NUL to NULL
 - added '\n' as second argument to strchr
 
 ### Test:
+
 - input: test test
 - output: your input is: test test
 - working correctly
 
 ## lexer.c - get_tokens()
+
 - splits input string into tokens using strtok
 
 ### Bug:
+
 - missing ) in for loop in main.c
 - logical error: get_tokens result not used
 - was printing old tokenlist instead of new one from input
 
 ### Fix:
+
 - added missing ) after i++
 - replaced old tokenlist with get_tokens(input)
 
 ### Test:
+
 - input: cd src
 - output: token[0]: cd, token[1]: src
+- working correctly
+
+## lexer.c - free_tokens()
+
+- frees each token string first
+- then frees items array
+- then frees tokenlist itself
+
+### Test:
+
+- input: cd src
+- output: token[0]: cd, token[1]: src
+- memory freed after use
 - working correctly
