@@ -194,3 +194,27 @@
 - compiled successfully
 - output: working
 - working fine
+
+## exec.c - find_executable() and run_foreground()
+
+- find_executable searches $PATH for command
+- run_foreground forks child process to run command
+
+### Bug:
+
+- missing semicolon after malloc in str_copy
+- missing semicolon after int status in run_foreground
+- compiler showed: error fullpath undeclared
+
+### Fix:
+
+- added missing semicolons
+- added full fath in main.c
+
+### Test:
+
+- input: ls
+- output: found /usr/bin/ls, files listed correctly
+- input: ls -la
+- output: found /usr/bin/ls, files listed with details
+- working correctly
