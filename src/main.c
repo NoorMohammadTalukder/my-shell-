@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "lexer.h"
-#include "exec.h"
+//#include "lexer.h"
+//#include "exec.h"
 #include "shell.h"
 
 int main(void) {
@@ -23,6 +23,7 @@ int main(void) {
     //free(fullpath);
     //free_tokens(tl);
     //free(input);
-    printf("working\n");
+   // printf("working\n");
+    run_shell ();
     return 0;
 }
