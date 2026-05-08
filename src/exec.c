@@ -8,7 +8,7 @@
 
 static char *str_copy(const char *s) {
     size_t n = strlen(s) + 1;
-    char *out = malloc(n)
+    char *out = malloc(n);
     if (!out) return NULL;
     memcpy(out, s, n);
     return out;
@@ -84,7 +84,7 @@ int run_foreground(const char *fullpath, char *const argv[]) {
         _exit(1);
     }
 
-    int status = 0
+    int status = 0;
     waitpid(pid, &status, 0);
     return status;
 }
