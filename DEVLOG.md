@@ -231,3 +231,12 @@
 - output: found /usr/bin/ls, files listed correctly
 - input: ls -la
 - working correctly
+
+## shell.h
+- declared run_shell function
+
+### Test:
+- included shell.h in main.c
+- compiled successfully
+- output: working
+- working correctly
