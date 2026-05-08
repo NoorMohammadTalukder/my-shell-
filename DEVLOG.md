@@ -200,21 +200,34 @@
 - find_executable searches $PATH for command
 - run_foreground forks child process to run command
 
-### Bug:
+### Bug 1 - syntax:
 
 - missing semicolon after malloc in str_copy
+- compiler showed: expected , or ; before if
+
+### Bug 2 - syntax:
+
 - missing semicolon after int status in run_foreground
+- compiler showed: expected , or ; before waitpid
+
+### Fix:
+
+- added semicolons in str_copy and run_foreground
+
+## main.c - testing exec.c
+
+### Bug:
+
+- fullpath variable was undeclared
 - compiler showed: error fullpath undeclared
 
 ### Fix:
 
-- added missing semicolons
-- added full fath in main.c
+- added fullpath in main.c
 
 ### Test:
 
 - input: ls
 - output: found /usr/bin/ls, files listed correctly
 - input: ls -la
-- output: found /usr/bin/ls, files listed with details
 - working correctly
