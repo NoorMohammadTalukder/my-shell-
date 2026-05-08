@@ -181,3 +181,16 @@
 - input: cd ~
 - output: token[0]: cd, token[1]: /root
 - working correctly
+
+## exec.h
+
+- declared find_executable
+- declared run_foreground
+
+### Test:
+
+- commented out other code in main.c
+- included exec.h and printed "working"
+- compiled successfully
+- output: working
+- working fine
