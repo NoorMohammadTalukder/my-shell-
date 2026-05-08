@@ -9,6 +9,7 @@ int main(void) {
     tokenlist *tl = get_tokens(input);
     expand_env_vars(tl);
     expand_tilde(tl);
+    char *fullpath = find_executable(tl->items[0]);
     for (int i = 0; i < (int)tl->size; i++){
         printf("token[%d]: %s\n", i, tl->items[i]);
     }
