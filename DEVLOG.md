@@ -171,3 +171,13 @@
 
 - input: echo $HOME
 - output: token[0]: echo, token[1]: /root
+
+## lexer.c - expand_tilde()
+
+- handles ~ alone with home and ~/something cases
+
+### Test:
+
+- input: cd ~
+- output: token[0]: cd, token[1]: /root
+- working correctly
