@@ -7,6 +7,7 @@ int main(void) {
     printf("your input is: %s\n", input);
     tokenlist *tl = get_tokens(input);
     expand_env_vars(tl);
+    expand_tilde(tl);
     for (int i = 0; i < (int)tl->size; i++){
         printf("token[%d]: %s\n", i, tl->items[i]);
     }

@@ -74,7 +74,7 @@ void free_tokens(tokenlist *tokens) {
     free(tokens->items);
     free(tokens);
 }
-// madeup strdup, using in expand_env_vars
+// madeup strdup, using in expand_env_vars,expand_tilde
 static char *str_copy(const char *s) {
     size_t len = strlen(s) + 1;
     char *copy = malloc(len);
@@ -101,5 +101,35 @@ void expand_env_vars(tokenlist *tokens) {
         val = getenv(tok+1);
         free(tokens->items[i]);
         tokens->items[i] = str_copy(val ? val : "");
+    }
+}
+// replace ~ with home directory
+void expand_tilde(tokenlist *tokens) {
+    const char *home = getenv("HOME");
+    if (home == NULL){
+        home = "";
+    }
+
+    for (int i = 0; i < (int)tokens->size; i++) {
+        char *tok = tokens->items[i];
+
+        if (tok[0] != '~'){
+        continue;
+        }
+
+        //~ alone
+        if (tok[1] == '\0') {
+            free(tokens->items[i]);
+            tokens->items[i] = str_copy(home);
+        }
+        //~/something
+        else if (tok[1] == '/') {
+            size_t len = strlen(home) + strlen(tok) + 1;
+            char *expanded = malloc(len);
+            strcpy(expanded, home);
+            strcat(expanded, tok + 1);
+            free(tokens->items[i]);
+            tokens->items[i] = expanded;
+        }
     }
 }
