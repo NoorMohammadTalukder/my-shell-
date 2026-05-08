@@ -240,3 +240,18 @@
 - compiled successfully
 - output: working
 - working correctly
+
+## shell.c - print_prompt()
+- prints user@machine:pwd> prompt
+
+### Bug 1:
+- prompt showed (null) when variable not set
+
+### Fix 1:
+- added if checks for all three variables
+- set default values unknown for user and machine
+- set empty string for pwd
+
+### Test:
+- prompt shows: root@unknown:/root/my-shell-v3>
+- working correctly
