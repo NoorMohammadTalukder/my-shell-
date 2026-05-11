@@ -61,6 +61,51 @@ parsed_cmd parse_command(tokenlist *tokens) {
     return cmd;
 }
 
+// run cmd with redirection and fork
+int execute_parsed_cmd(const char *fullpath, parsed_cmd *cmd, int background, const char *input_cmdline) {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+        return -1;
+    }
+
+    if (pid == 0) {
+        // handle input redirection
+        if (cmd->in_file) {
+            int fd = open(cmd->in_file, O_RDONLY);
+            if (fd < 0) {
+                perror("input redirection");
+                exit(1);
+            }
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+        }
+
+        // handle output redirection
+        if (cmd->out_file) {
+            int fd = open(cmd->out_file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+            if (fd < 0) {
+                perror("output redirection");
+                exit(1);
+            }
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+        }
+
+        execv(fullpath, cmd->argv);
+        perror("execv");
+        exit(1);
+    }
+
+    // no redirection
+    if (!cmd->in_file && !cmd->out_file) {
+        return run_foreground(fullpath, cmd->argv);
+    }
+
+    waitpid(pid, NULL, 0);
+    return 0;
+}
 
 //temporary shell loop
 void run_shell(void) {
@@ -76,9 +121,15 @@ void run_shell(void) {
         expand_env_vars(tl);
         expand_tilde(tl);
         parsed_cmd cmd = parse_command(tl);
-        printf("argv[0]: %s\n", cmd.argv[0]);
-        printf("in_file: %s\n",  cmd.in_file  ? cmd.in_file  : "none");
-        printf("out_file: %s\n", cmd.out_file ? cmd.out_file : "none");
+        // printf("argv[0]: %s\n", cmd.argv[0]);
+        // printf("in_file: %s\n",  cmd.in_file  ? cmd.in_file  : "none");
+        // printf("out_file: %s\n", cmd.out_file ? cmd.out_file : "none");
+        char *fullpath = find_executable(cmd.argv[0]);
+        if (fullpath == NULL) {
+            printf("command not found: %s\n", cmd.argv[0]);
+        } else {
+            execute_parsed_cmd(fullpath, &cmd, 0, input);
+        }
         free(cmd.argv);
         free_tokens(tl);
         free(input);
