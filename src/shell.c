@@ -51,7 +51,7 @@ parsed_cmd parse_command(tokenlist *tokens) {
         }
         else if (strcmp(tokens->items[i], ">") == 0) {
             if (i + 1 < tokens->size)
-                cmd.out_file = tokens->items[i++];
+                cmd.out_file = tokens->items[++i];
         }
         else {
             cmd.argv[argc++] = tokens->items[i];

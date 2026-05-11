@@ -1,0 +1,9 @@
+DEVLOG.md
+Makefile
+README.md
+bin
+include
+input.txt
+obj
+output.txt
+src

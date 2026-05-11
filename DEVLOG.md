@@ -292,3 +292,36 @@
 - in_file: input.txt
 - out_file: none
 - working correctly
+
+## shell.c - execute_parsed_cmd()
+- forks child process to run command
+- handles input redirection
+- handles output redirection
+- parent waits for child to finish
+
+### Bug 1:
+- used i++ instead of ++i for out_file in parse_command
+- created a file named > in directory
+- ls showed > as a file
+
+### Fix 1:
+- changed i++ to ++i for out_file
+- deleted the > file using find . -inum 264380 -delete
+
+### Bug 2:
+- double fork issue
+- ls was running twice
+
+### Fix 2:
+- removed run_foreground from execute_parsed_cmd
+- called run_foreground in run_shell 
+- called execute_parsed_cmd only when redirection needed
+
+### Test:
+- input: ls
+- output: files listed correctly
+- input: ls > output.txt
+- output: files saved to output.txt
+- input: cat < input.txt
+- output: file content shown
+- working correctly
