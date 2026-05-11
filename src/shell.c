@@ -27,28 +27,7 @@ static void print_prompt(void) {
     fflush(stdout);
 }
 
-//temporary shell loop
-void run_shell(void) {
-    while (1) {
-        print_prompt();
-        char *input = get_input();
-        if (input == NULL) {
-            printf("\n");
-            break;
-        }
-        printf("you typed: %s\n", input);
-        tokenlist *tl = get_tokens(input);
-        expand_env_vars(tl);
-        expand_tilde(tl);
-        parsed_cmd cmd = parse_command(tl);
-        printf("argv[0]: %s\n", cmd.argv[0]);
-        printf("in_file: %s\n",  cmd.in_file  ? cmd.in_file  : "none");
-        printf("out_file: %s\n", cmd.out_file ? cmd.out_file : "none");
-        free(cmd.argv);
-        free_tokens(tl);
-        free(input);
-    }
-}
+
 
 // struct to hold parsed cmd
 typedef struct {
@@ -80,4 +59,28 @@ parsed_cmd parse_command(tokenlist *tokens) {
     }
     cmd.argv[argc] = NULL;
     return cmd;
+}
+
+
+//temporary shell loop
+void run_shell(void) {
+    while (1) {
+        print_prompt();
+        char *input = get_input();
+        if (input == NULL) {
+            printf("\n");
+            break;
+        }
+        printf("you typed: %s\n", input);
+        tokenlist *tl = get_tokens(input);
+        expand_env_vars(tl);
+        expand_tilde(tl);
+        parsed_cmd cmd = parse_command(tl);
+        printf("argv[0]: %s\n", cmd.argv[0]);
+        printf("in_file: %s\n",  cmd.in_file  ? cmd.in_file  : "none");
+        printf("out_file: %s\n", cmd.out_file ? cmd.out_file : "none");
+        free(cmd.argv);
+        free_tokens(tl);
+        free(input);
+    }
 }
