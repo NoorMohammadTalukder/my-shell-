@@ -233,25 +233,62 @@
 - working correctly
 
 ## shell.h
+
 - declared run_shell function
 
 ### Test:
+
 - included shell.h in main.c
 - compiled successfully
 - output: working
 - working correctly
 
 ## shell.c - print_prompt()
+
 - prints user@machine:pwd> prompt
 
-### Bug 1:
+### Bug:
+
 - prompt showed (null) when variable not set
 
-### Fix 1:
+### Fix:
+
 - added if checks for all three variables
 - set default values unknown for user and machine
 - set empty string for pwd
 
 ### Test:
+
 - prompt shows: root@unknown:/root/my-shell-v3>
+- working correctly
+
+## 5-10-26
+
+## shell.c - parse_command()
+
+- parses tokens into command with redirection
+- handles < for input redirection
+- handles > for output redirection
+
+### Bug :
+
+- parsed_cmd struct defined after run_shell()
+- compiler showed unknown type name parsed_cmd
+- run_shell could not find the struct
+
+### Fix:
+
+- moved struct and parse_command above run_shell()
+- compiler found struct correctly
+
+### Test:
+
+- input: ls > output.txt
+- argv[0]: ls
+- in_file: none
+- out_file: output.txt
+- input: cat < input.txt
+- argv[0]: cat
+- in_file: input.txt
+- out_file: none
 - working correctly
