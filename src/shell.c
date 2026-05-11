@@ -44,10 +44,10 @@ parsed_cmd parse_command(tokenlist *tokens) {
     cmd.argv = malloc(sizeof(char *) * (tokens->size + 1));
     int argc = 0;
 
-    for (size_t i = 0; i < tokens->size; i++) {
+    for (size_t i = 0; i < tokens->size; ++i) {
         if (strcmp(tokens->items[i], "<") == 0) {
             if (i + 1 < tokens->size)
-                cmd.in_file = tokens->items[i++];
+                cmd.in_file = tokens->items[++i];
         }
         else if (strcmp(tokens->items[i], ">") == 0) {
             if (i + 1 < tokens->size)
@@ -116,7 +116,7 @@ void run_shell(void) {
             printf("\n");
             break;
         }
-        printf("you typed: %s\n", input);
+        //printf("you typed: %s\n", input);
         tokenlist *tl = get_tokens(input);
         expand_env_vars(tl);
         expand_tilde(tl);
@@ -127,9 +127,12 @@ void run_shell(void) {
         char *fullpath = find_executable(cmd.argv[0]);
         if (fullpath == NULL) {
             printf("command not found: %s\n", cmd.argv[0]);
+        }else if (!cmd.in_file && !cmd.out_file) {
+            run_foreground(fullpath, cmd.argv);
         } else {
             execute_parsed_cmd(fullpath, &cmd, 0, input);
         }
+        free(fullpath);
         free(cmd.argv);
         free_tokens(tl);
         free(input);
