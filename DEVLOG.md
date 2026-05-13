@@ -325,3 +325,25 @@
 - input: cat < input.txt
 - output: file content shown
 - working correctly
+
+
+## 11-5-25 -> 12-5-25
+
+## shell.c - job functions testing
+
+### Bugs Found:
+- MAX_JOB typo instead of MAX_JOBS 
+- missing semicolons after continue in print_jobs and reap_background_jobs
+- job functions defined after execute_parsed_cmd caused implicit error
+
+### Fixes:
+- changed MAX_JOB to MAX_JOBS
+- added missing semicolons
+- moved job functions before execute_parsed_cmd
+
+### Test:
+- input: sleep 5 &
+- output: [1] 1234
+- input: jobs
+- output: [1] 1234 sleep 5
+- all working correctly

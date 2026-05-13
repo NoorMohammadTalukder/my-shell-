@@ -185,7 +185,7 @@ static void reap_background_jobs(void) {
         int status = 0;
         pid_t r = waitpid(job_table[i].pid, &status, WNOHANG);
         if (r == 0) {
-          continue
+          continue;
         };
 
         if (r == job_table[i].pid || (r < 0 && errno == ECHILD)) {
