@@ -27,6 +27,53 @@ static void print_prompt(void) {
     fflush(stdout);
 }
 
+// max background jobs
+#define MAX_JOBS 10
+// job struct
+typedef struct {
+    int job_id;
+    pid_t pid;
+    char *cmdline;
+    int active;
+} job;
+static job job_table[MAX_JOBS];
+static int next_job_id = 1;
+
+//find empty slot
+static int find_free_job_slot(void) {
+    for (int i = 0; i < MAX_JOBS; i++) {
+        if (!job_table[i].active){
+          return i;
+        } 
+    }
+    return -1;
+}
+
+//copy cmdline string
+static char *dup_cmdline(const char *input) {
+    size_t n = strlen(input);
+    char *s = malloc(n + 1);
+    if (!s) {
+      return NULL;
+    }
+    memcpy(s, input, n);
+    s[n] = '\0';
+    return s;
+}
+
+//add job to job table
+static void start_job(pid_t pid, const char *input_cmdline) {
+    int slot = find_free_job_slot();
+    if (slot < 0) {
+        printf("error: too many background jobs\n");
+        return;
+    }
+    job_table[slot].job_id  = next_job_id++;
+    job_table[slot].pid     = pid;
+    job_table[slot].cmdline = dup_cmdline(input_cmdline);
+    job_table[slot].active  = 1;
+    printf("[%d] %d\n", job_table[slot].job_id, (int)pid);
+}
 
 
 // struct to hold parsed cmd
@@ -54,7 +101,7 @@ parsed_cmd parse_command(tokenlist *tokens) {
         else if (strcmp(tokens->items[i], ">") == 0) {
             if (i + 1 < tokens->size)
                 {
-                  cmd.out_file = tokens->items[++];
+                  cmd.out_file = tokens->items[i++];
                 }
         }
         else {
@@ -114,59 +161,12 @@ int execute_parsed_cmd(const char *fullpath, parsed_cmd *cmd, int background, co
     return 0;
 }
 
-// max background jobs
-#define MAX_JOBS 10
-// job struct
-typedef struct {
-    int job_id;
-    pid_t pid;
-    char *cmdline;
-    int active;
-} job;
-static job job_table[MAX_JOBS];
-static int next_job_id = 1;
-
-//find empty slot
-static int find_free_job_slot(void) {
-    for (int i = 0; i < MAX_JOB; i++) {
-        if (!job_table[i].active){
-          return i;
-        } 
-    }
-    return -1;
-}
-
-//copy cmdline string
-static char *dup_cmdline(const char *input) {
-    size_t n = strlen(input);
-    char *s = malloc(n + 1);
-    if (!s) {
-      return NULL;
-    }
-    memcpy(s, input, n);
-    s[n] = '\0';
-    return s;
-}
-
-//add job to job table
-static void start_job(pid_t pid, const char *input_cmdline) {
-    int slot = find_free_job_slot();
-    if (slot < 0) {
-        printf("error: too many background jobs\n");
-        return;
-    }
-    job_table[slot].job_id  = next_job_id++;
-    job_table[slot].pid     = pid;
-    job_table[slot].cmdline = dup_cmdline(input_cmdline);
-    job_table[slot].active  = 1;
-    printf("[%d] %d\n", job_table[slot].job_id, (int)pid);
-}
 
 //print all active background jobs
 static void print_jobs(void) {
     for (int i = 0; i < MAX_JOBS; i++) {
         if (!job_table[i].active) {
-          continue
+          continue;
         };
         printf("[%d] %d %s\n",
                job_table[i].job_id,
@@ -180,7 +180,7 @@ static void print_jobs(void) {
 static void reap_background_jobs(void) {
     for (int i = 0; i < MAX_JOBS; i++) {
         if (!job_table[i].active) {
-          continue
+          continue;
         };
         int status = 0;
         pid_t r = waitpid(job_table[i].pid, &status, WNOHANG);
