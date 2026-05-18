@@ -332,7 +332,9 @@ static int execute_pipeline(parsed_cmd cmds[3], int ncmd, int background, const 
             if (p2[0] != -1) {
 		 close(p2[0]); 
 		}
-            if (p2[1] != -1) { close(p2[1]); }
+            if (p2[1] != -1) {
+		 close(p2[1]); 
+		}
 
             if (cmds[i].in_file) {
                 int fd = open(cmds[i].in_file, O_RDONLY);
@@ -424,6 +426,37 @@ void run_shell(void) {
             run_foreground(fullpath, cmd.argv);
         } else {
             execute_parsed_cmd(fullpath, &cmd, 0, input);
+        }
+	// check for pipes
+        int npipes = count_pipes(tl);
+
+        if (npipes == 0) {
+            parsed_cmd cmd = parse_command(tl);
+            char *fullpath = find_executable(cmd.argv[0]);
+            if (fullpath == NULL) {
+                printf("command not found: %s\n", cmd.argv[0]);
+            } else if (!cmd.in_file && !cmd.out_file) {
+                run_foreground(fullpath, cmd.argv);
+            } else {
+                execute_parsed_cmd(fullpath, &cmd, background, input);
+            }
+            free(fullpath);
+            free(cmd.argv);
+
+        } else if (npipes <= 2) {
+            parsed_cmd cmds[3];
+            int ncmd = parse_pipeline(tl, cmds);
+            if (ncmd < 0) {
+                printf("error: invalid pipeline\n");
+            } else {
+                execute_pipeline(cmds, ncmd, background, input);
+            }
+            for (int i = 0; i < 3; i++) {
+                free(cmds[i].argv);
+            }
+
+        } else {
+            printf("error: too many pipes\n");
         }
         free(fullpath);
         free(cmd.argv);
