@@ -216,6 +216,17 @@ static int handle_background_token(tokenlist *tokens, int *background) {
     }
     return 1;
 }
+
+//count pipes in token
+static int count_pipes(tokenlist *tokens) {
+    int c = 0;
+    for (size_t i = 0; i < tokens->size; i++) {
+        if (strcmp(tokens->items[i], "|") == 0){
+          c++;
+         }
+    }
+    return c;
+}
 //temporary shell loop
 void run_shell(void) {
     while (1) {
