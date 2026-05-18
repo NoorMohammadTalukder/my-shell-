@@ -254,6 +254,130 @@ static parsed_cmd parse_segment(tokenlist *tokens, size_t start, size_t end) {
     cmd.argv[argc] = NULL;
     return cmd;
 }
+// parse full pipeline into commands
+static int parse_pipeline(tokenlist *tokens, parsed_cmd cmds[3]) {
+    size_t seg_start = 0;
+    int ncmd = 0;
+
+    for (size_t i = 0; i <= tokens->size; i++) {
+        if (i == tokens->size || strcmp(tokens->items[i], "|") == 0) {
+            if (i == seg_stat) { 
+		return -1; 
+		}
+            if (ncmd >= 3) { 
+		return -1; 
+		}
+            cmds[ncmd++] = parse_segment(tokens, seg_start, i);
+            seg_start = i + 1;
+        }
+    }
+    return (ncmd >= 1) ? ncmd : -1;
+}
+
+//execute pipeline of up to 3 cmd
+static int execute_pipeline(parsed_cmd cmds[3], int ncmd, int background, const char *input_cmdline) {
+    int p1[2] = {-1, -1};
+    int p2[2] = {-1, -1};
+    pid_t pids[3] = {-1, -1, -1};
+
+    if (ncmd < 1 || ncmd > 3) {
+	 return -1; 
+	}
+
+    if (ncmd >= 2) {
+        if (pipe(p1) < 0) {
+	 perror("pipe");
+	 return -1; 
+	}
+    }
+    if (ncmd == 3) {
+        if (pipe(p2) < 0) {
+            perror("pipe");
+            close(p1[0]); 
+            close(p1[1]);
+            return -1;
+        }
+    }
+
+    for (int i = 0; i < ncmd; i++) {
+        char *fullpath = find_executable(cmds[i].argv[0]);
+        if (fullpath == NULL) {
+            printf("command not found: %s\n", cmds[i].argv[0]);
+            return -1;
+        }
+
+        pid_t pid = fork();
+        if (pid < 0) { perror("fork"); return -1; }
+
+        if (pid == 0) {
+            if (ncmd >= 2) {
+                if (i == 0) {
+                    dup2(p1[1], STDOUT_FILENO);
+                } else if (i == 1) {
+                    dup2(p1[0], STDIN_FILENO);
+                    if (ncmd == 3) {
+                        dup2(p2[1], STDOUT_FILENO);
+                    }
+                } else if (i == 2) {
+                    dup2(p2[0], STDIN_FILENO);
+                }
+            }
+
+            if (p1[0] != -1) { 
+		close(p1[0]); 
+		}
+            if (p1[1] != -1) { 
+		close(p1[1]); 
+		}
+            if (p2[0] != -1) {
+		 close(p2[0]); 
+		}
+            if (p2[1] != -1) { close(p2[1]); }
+
+            if (cmds[i].in_file) {
+                int fd = open(cmds[i].in_file, O_RDONLY);
+                dup2(fd, STDIN_FILENO);
+                close(fd);
+            }
+            if (cmds[i].out_file) {
+                int fd = open(cmds[i].out_file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+                dup2(fd, STDOUT_FILENO);
+                close(fd);
+            }
+
+            execv(fullpath, cmds[i].argv);
+            perror("execv");
+            _exit(1);
+        }
+
+        free(fullpath);
+        pids[i] = pid;
+    }
+
+    if (p1[0] != -1){ 
+	close(p1[0]); 
+    }
+    if (p1[1] != -1) {
+	 close(p1[1]); 
+    }
+    if (p2[0] != -1) { 
+	close(p2[0]); 
+    }
+    if (p2[1] != -1) {
+	 close(p2[1]); 
+    }
+
+    if (background) {
+        start_job(pids[ncmd - 1], input_cmdline);
+        return 0;
+    }
+
+    for (int i = 0; i < ncmd; i++) {
+        int status;
+        waitpid(pids[i], &status, 0);
+    }
+    return 0;
+}
 //temporary shell loop
 void run_shell(void) {
     while (1) {
