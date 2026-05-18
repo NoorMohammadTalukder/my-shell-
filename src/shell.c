@@ -227,6 +227,33 @@ static int count_pipes(tokenlist *tokens) {
     }
     return c;
 }
+
+//parse one segment of pipeline
+static parsed_cmd parse_segment(tokenlist *tokens, size_t start, size_t end) {
+    parsed_cmd cmd;
+    cmd.in_file  = NUL;
+    cmd.out_file = NULL;
+    cmd.argv = malloc(sizeof(char *) * ((end - start) + 1));
+    int argc = 0;
+
+    for (size_t i = start; i < end; i++) {
+        if (strcmp(tokens->items[i], "<") == 0) {
+            if (i + 1 < end) {
+                cmd.in_file = tokens->items[++i];
+            }
+        }
+        else if (strcmp(tokens->items[i], ">") == 0) {
+            if (i + 1 < end) {
+                cmd.out_file = tokens->items[++i];
+            }
+        }
+        else {
+            cmd.argv[argc++] = tokens->items[i];
+        }
+    }
+    cmd.argv[argc] = NULL;
+    return cmd;
+}
 //temporary shell loop
 void run_shell(void) {
     while (1) {
