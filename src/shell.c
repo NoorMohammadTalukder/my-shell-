@@ -231,7 +231,7 @@ static int count_pipes(tokenlist *tokens) {
 //parse one segment of pipeline
 static parsed_cmd parse_segment(tokenlist *tokens, size_t start, size_t end) {
     parsed_cmd cmd;
-    cmd.in_file  = NUL;
+    cmd.in_file  = NULL;
     cmd.out_file = NULL;
     cmd.argv = malloc(sizeof(char *) * ((end - start) + 1));
     int argc = 0;
@@ -254,14 +254,14 @@ static parsed_cmd parse_segment(tokenlist *tokens, size_t start, size_t end) {
     cmd.argv[argc] = NULL;
     return cmd;
 }
-// parse full pipeline into commands
+//parse full pipeline 
 static int parse_pipeline(tokenlist *tokens, parsed_cmd cmds[3]) {
     size_t seg_start = 0;
     int ncmd = 0;
 
     for (size_t i = 0; i <= tokens->size; i++) {
         if (i == tokens->size || strcmp(tokens->items[i], "|") == 0) {
-            if (i == seg_stat) { 
+            if (i == seg_start) { 
 		return -1; 
 		}
             if (ncmd >= 3) { 
@@ -415,20 +415,22 @@ void run_shell(void) {
             free(input);
             continue;
         }
-        parsed_cmd cmd = parse_command(tl);
+	int npipes = count_pipes(tl);
+	printf("pipes found: %d\n", npipes); 
+       // parsed_cmd cmd = parse_command(tl);
         // printf("argv[0]: %s\n", cmd.argv[0]);
         // printf("in_file: %s\n",  cmd.in_file  ? cmd.in_file  : "none");
         // printf("out_file: %s\n", cmd.out_file ? cmd.out_file : "none");
-        char *fullpath = find_executable(cmd.argv[0]);
-        if (fullpath == NULL) {
-            printf("command not found: %s\n", cmd.argv[0]);
-        }else if (!cmd.in_file && !cmd.out_file) {
-            run_foreground(fullpath, cmd.argv);
-        } else {
-            execute_parsed_cmd(fullpath, &cmd, 0, input);
-        }
+        //char *fullpath = find_executable(cmd.argv[0]);
+        //if (fullpath == NULL) {
+           // printf("command not found: %s\n", cmd.argv[0]);
+        //}else if (!cmd.in_file && !cmd.out_file) {
+          //  run_foreground(fullpath, cmd.argv);
+       // } else {
+         //   execute_parsed_cmd(fullpath, &cmd, 0, input);
+        //}
 	// check for pipes
-        int npipes = count_pipes(tl);
+        //int npipes = count_pipes(tl);
 
         if (npipes == 0) {
             parsed_cmd cmd = parse_command(tl);
@@ -458,8 +460,8 @@ void run_shell(void) {
         } else {
             printf("error: too many pipes\n");
         }
-        free(fullpath);
-        free(cmd.argv);
+        //free(fullpath);
+        //free(cmd.argv);
         free_tokens(tl);
         free(input);
     }
