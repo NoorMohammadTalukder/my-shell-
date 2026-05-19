@@ -347,3 +347,38 @@
 - input: jobs
 - output: [1] 1234 sleep 5
 - all working correctly
+
+##5-18-25 -> 5-19-25
+
+## shell.c - pipe functions
+
+### Bug 1:
+- NUL typo instead of NULL in parse_segment
+- seg_stat typo instead of seg_start in parse_pipeline
+
+### Fix 1:
+- changed NUL to NULL
+- changed seg_stat to seg_start
+
+### Bug 2:
+- old single command block still running before pipe check
+- ls was getting | and grep as arguments
+- added debug print to check count_pipes output
+- pipes found: 1 confirmed count_pipes was working
+- problem was duplicate code running before pipe check
+
+### Fix 2:
+- removed old duplicate code block
+
+### Bug 3:
+- free(fullpath) and free(cmd.argv) undeclared
+
+### Fix 3:
+- removed duplicate free statements from bottom of run_shell
+
+### Test:
+- input: ls | grep src
+- output: src
+- input: ls | grep src | wc -l
+- output: 1
+- piping working correctly
