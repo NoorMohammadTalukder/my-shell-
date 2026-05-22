@@ -149,10 +149,7 @@ int execute_parsed_cmd(const char *fullpath, parsed_cmd *cmd, int background, co
         exit(1);
     }
 
-    // no redirection
-    if (!cmd->in_file && !cmd->out_file) {
-        return run_foreground(fullpath, cmd->argv);
-    }
+    
     if (background) {
         start_job(pid, input_cmdline);  
         return 0;
@@ -437,7 +434,7 @@ void run_shell(void) {
             char *fullpath = find_executable(cmd.argv[0]);
             if (fullpath == NULL) {
                 printf("command not found: %s\n", cmd.argv[0]);
-            } else if (!cmd.in_file && !cmd.out_file) {
+            } else if (!cmd.in_file && !cmd.out_file && !background) {
                 run_foreground(fullpath, cmd.argv);
             } else {
                 execute_parsed_cmd(fullpath, &cmd, background, input);
