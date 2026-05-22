@@ -401,3 +401,32 @@
 - input: ls | grep src | wc -l
 - output: 1
 - piping working correctly
+
+## 5-20-26 -> 5-22-26
+
+## shell.c - background jobs and pipeline fixes
+
+### Bug 1:
+
+- sleep 3 & was not showing PID
+
+### Fix 1:
+
+- added !background to condition
+
+### Bug 2:
+
+- double fork in execute_parsed_cmd
+
+### Fix 2:
+
+- removed if (!cmd->in_file && !cmd->out_file) run_foreground block
+
+### Bug 3:
+
+- created a file named > in directory
+- deleted using find . -inum 264157 -delete
+
+### Fix 3:
+
+- deleted using find . -inum 264157 -delete
