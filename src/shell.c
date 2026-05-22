@@ -73,6 +73,7 @@ static void start_job(pid_t pid, const char *input_cmdline) {
     job_table[slot].cmdline = dup_cmdline(input_cmdline);
     job_table[slot].active  = 1;
     printf("[%d] %d\n", job_table[slot].job_id, (int)pid);
+    fflush(stdout);
 }
 
 
@@ -101,7 +102,7 @@ parsed_cmd parse_command(tokenlist *tokens) {
         else if (strcmp(tokens->items[i], ">") == 0) {
             if (i + 1 < tokens->size)
                 {
-                  cmd.out_file = tokens->items[i++];
+                  cmd.out_file = tokens->items[++i];
                 }
         }
         else {
@@ -114,7 +115,10 @@ parsed_cmd parse_command(tokenlist *tokens) {
 
 // run cmd with redirection and fork
 int execute_parsed_cmd(const char *fullpath, parsed_cmd *cmd, int background, const char *input_cmdline) {
-    pid_t pid = fork();
+ printf("debug: execute_parsed_cmd called background=%d\n", background); 
+    fflush(stdout);
+   
+ pid_t pid = fork();
 
     if (pid < 0) {
         perror("fork");
@@ -149,10 +153,7 @@ int execute_parsed_cmd(const char *fullpath, parsed_cmd *cmd, int background, co
         exit(1);
     }
 
-    // no redirection
-    if (!cmd->in_file && !cmd->out_file) {
-        return run_foreground(fullpath, cmd->argv);
-    }
+    
     if (background) {
         start_job(pid, input_cmdline);  
         return 0;
@@ -437,7 +438,7 @@ void run_shell(void) {
             char *fullpath = find_executable(cmd.argv[0]);
             if (fullpath == NULL) {
                 printf("command not found: %s\n", cmd.argv[0]);
-            } else if (!cmd.in_file && !cmd.out_file) {
+            } else if (!cmd.in_file && !cmd.out_file && !background) {
                 run_foreground(fullpath, cmd.argv);
             } else {
                 execute_parsed_cmd(fullpath, &cmd, background, input);
