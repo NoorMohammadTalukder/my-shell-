@@ -381,7 +381,7 @@ static int execute_pipeline(parsed_cmd cmds[3], int ncmd, int background, const 
     }
     return 0;
 }
-//temporary shell loop
+//shell loop
 void run_shell(void) {
     while (1) {
         reap_background_jobs();
