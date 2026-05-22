@@ -1,5 +1,7 @@
 # Development Log
 
+## 5-7-26
+
 ## Project Setup
 
 - Created GitHub repository and initialized project
@@ -243,6 +245,8 @@
 - output: working
 - working correctly
 
+## 5-8-26
+
 ## shell.c - print_prompt()
 
 - prints user@machine:pwd> prompt
@@ -294,30 +298,36 @@
 - working correctly
 
 ## shell.c - execute_parsed_cmd()
+
 - forks child process to run command
 - handles input redirection
 - handles output redirection
 - parent waits for child to finish
 
 ### Bug 1:
+
 - used i++ instead of ++i for out_file in parse_command
 - created a file named > in directory
 - ls showed > as a file
 
 ### Fix 1:
+
 - changed i++ to ++i for out_file
 - deleted the > file using find . -inum 264380 -delete
 
 ### Bug 2:
+
 - double fork issue
 - ls was running twice
 
 ### Fix 2:
+
 - removed run_foreground from execute_parsed_cmd
-- called run_foreground in run_shell 
+- called run_foreground in run_shell
 - called execute_parsed_cmd only when redirection needed
 
 ### Test:
+
 - input: ls
 - output: files listed correctly
 - input: ls > output.txt
@@ -326,41 +336,46 @@
 - output: file content shown
 - working correctly
 
-
-## 11-5-25 -> 12-5-25
+## 5-11-25 -> 5-13-25
 
 ## shell.c - job functions testing
 
 ### Bugs Found:
-- MAX_JOB typo instead of MAX_JOBS 
+
+- MAX_JOB typo instead of MAX_JOBS
 - missing semicolons after continue in print_jobs and reap_background_jobs
 - job functions defined after execute_parsed_cmd caused implicit error
 
 ### Fixes:
+
 - changed MAX_JOB to MAX_JOBS
 - added missing semicolons
 - moved job functions before execute_parsed_cmd
 
 ### Test:
+
 - input: sleep 5 &
 - output: [1] 1234
 - input: jobs
 - output: [1] 1234 sleep 5
 - all working correctly
 
-##5-18-25 -> 5-19-25
+## 5-18-25 -> 5-19-25
 
 ## shell.c - pipe functions
 
 ### Bug 1:
+
 - NUL typo instead of NULL in parse_segment
 - seg_stat typo instead of seg_start in parse_pipeline
 
 ### Fix 1:
+
 - changed NUL to NULL
 - changed seg_stat to seg_start
 
 ### Bug 2:
+
 - old single command block still running before pipe check
 - ls was getting | and grep as arguments
 - added debug print to check count_pipes output
@@ -368,15 +383,19 @@
 - problem was duplicate code running before pipe check
 
 ### Fix 2:
+
 - removed old duplicate code block
 
 ### Bug 3:
+
 - free(fullpath) and free(cmd.argv) undeclared
 
 ### Fix 3:
+
 - removed duplicate free statements from bottom of run_shell
 
 ### Test:
+
 - input: ls | grep src
 - output: src
 - input: ls | grep src | wc -l
